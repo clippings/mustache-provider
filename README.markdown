@@ -1,30 +1,20 @@
 # MustacheServiceProvider
 
-`MustacheServiceProvider` provides [Mustache][mustache] integration for the
+Provides [Mustache][mustache] integration for the
+[Pimple][pimple] dependency-injection container or the
 [Silex][silex] application micro-framework.
 
- [mustache]: http://github.com/bobthecow/mustache.php
- [silex]:    http://silex.sensiolabs.org
-
+[mustache]: http://github.com/bobthecow/mustache.php
+[silex]:    http://silex.sensiolabs.org
+[pimple]:   http://pimple.sensiolabs.org/
 
 ## Installation
 
-Add `mustache/silex-provider` to your project's `composer.json`:
+Add `clippings/mustache-provider` to your project's Composer dependencies:
 
-```json
-{
-    "require": {
-        "mustache/silex-provider": "~1.0"
-    }
-}
+``` bash
+composer require clippings/mustache-provider
 ```
-
-And install:
-
-```
-php composer.phar install
-```
-
 
 ## Configuration
 
@@ -65,7 +55,7 @@ php composer.phar install
 ```php
 <?php
 
-$app->register(new Mustache\Silex\Provider\MustacheServiceProvider, array(
+$app->register(new Mustache\MustacheServiceProvider, array(
     'mustache.path' => __DIR__.'/../views',
     'mustache.options' => array(
         'cache' => __DIR__.'/../tmp/cache/mustache',
@@ -128,15 +118,16 @@ Hello, {{ name }}!
 
 ## The Trait
 
-`Mustache\Silex\Application\MustacheTrait` adds a `render` helper to your app:
+`Mustache\MustacheApplicationTrait` adds a `render` helper to your app:
 
 ```php
 <?php
+
 use Silex\Application;
 
 class MyApplication extends Application
 {
-    use \Mustache\Silex\Application\MustacheTrait;
+    use \Mustache\MustacheApplicationTrait;
 }
 
 $app = new MyApplication;
@@ -171,7 +162,7 @@ You can mess with Mustache before using it by extending the `mustache` service:
 ```php
 <?php
 
-$app['mustache'] = $app->share($app->extend('mustache', function ($mustache, $app) {
+$app['mustache'] = $app->factory($app->extend('mustache', function ($mustache, $app) {
     $mustache->addHelper('app', $app);
     $mustache->setLogger($app['monolog']);
 
