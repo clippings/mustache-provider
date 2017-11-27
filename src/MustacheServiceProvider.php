@@ -18,23 +18,30 @@ class MustacheServiceProvider implements ServiceProviderInterface
 {
     public function register(Container $app)
     {
-        $app['mustache.options'] = array();
-
-        $app['mustache'] = $app->factory(function (Container $app) {
-            $defaults = array(
+        $app['mustache.options.defaults'] = function (Container $app) {
+            return array(
                 'loader'          => $app['mustache.loader'],
                 'partials_loader' => $app['mustache.partials_loader'],
                 'helpers'         => $app['mustache.helpers'],
                 'charset'         => $app['charset'],
             );
+        };
 
+        $app['mustache.options'] = function (Container $app) {
+            return $app['mustache.options.defaults'];
+        };
+
+        $app['mustache'] = $app->factory(function (Container $app) {
             if (isset($app['logger'])) {
                 $defaults['logger'] = $app['logger'];
             }
 
-            $app['mustache.options'] = array_replace($defaults, $app['mustache.options']);
+            $options = array_replace(
+                $app['mustache.options.defaults'],
+                $app['mustache.options']
+            );
 
-            return new Mustache_Engine($app['mustache.options']);
+            return new Mustache_Engine($options);
         });
 
         $app['mustache.loader'] = $app->factory(function (Container $app) {
